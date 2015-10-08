@@ -1,0 +1,31 @@
+
+{% extends 'base.html' %}
+
+{% block body %}
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Melon Name</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for key in session %}
+        <tr>
+            <!-- <td>{{ melon }}</td> -->
+            <td>{{ sesion[key] }}</td>
+            <td>{{ melon_types[key].price }} </td>
+            <td>{{ melon_types[key].price*session[key] }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Total: $27.00</h3>
+
+    <a href="/checkout" class="btn btn-large btn-primary">Check Out</a>
+
+{% endblock %}
