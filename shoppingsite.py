@@ -70,8 +70,20 @@ def shopping_cart():
     #   - keep track of the total amt ordered for a melon-type
     #   - keep track of the total amt of the entire order
     # - hand to the template the total order cost and the list of melon types
-    melons_type = melons.melons_type
-    return render_template("cart.html", melons_type)
+    
+   
+    # TODO: turn the session to have a key of cart, value is a dictionary
+    # session = cart{
+    #                {id {quantity: 1}}
+                    # {id {quantity: 1}}
+
+    for id in session["cart"]:
+        common_name = melons.get_by_id(int(id)).common_name
+        print "common name is", common_name
+        # price = melons.get_by_id(id).price
+
+        
+    return render_template("cart.html")
 
 
 @app.route("/add_to_cart/<int:id>")
@@ -81,12 +93,19 @@ def add_to_cart(id):
     When a melon is added to the cart, redirect browser to the shopping cart
     page and display a confirmation message: 'Successfully added to cart'.
     """
-   
-    if id not in session:
-        session[id] = 1
+    ######### TOASK: WHY DO WE HAVE TO CONVERT TO INTS?
+
+    # TODO: turn the session to have a key of cart, value is a dictionary
+    # session = cart{
+    #                {id {quantity: 1}}
+                    # {id {quantity: 1}}
+    #                                }
+    session["cart"] = {} 
+    if id not in session["cart"]:
+        session["cart"][id] = {"quantity": 1}
     else:
-        session[id] += 1
-    print "session id is ", session[id]
+        session["cart"][id]["quantity"] += 1
+    # print "session id is ", session[id]
 
     flash("Successfully added to cart")
 
