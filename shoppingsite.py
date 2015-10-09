@@ -76,12 +76,15 @@ def shopping_cart():
     # session = cart{
     #                {id {quantity: 1}}
                     # {id {quantity: 1}}
-
+    print "session[cart] is", session["cart"]
     for id in session["cart"]:
         common_name = melons.get_by_id(int(id)).common_name
-        print "common name is", common_name
-        # price = melons.get_by_id(id).price
-
+        price = int(melons.get_by_id(int(id)).price)
+        quantity = int(session["cart"][int(id)]["quantity"])
+        total = price * quantity
+        session["cart"][id] = {"common_name": common_name, "price": price, "total": total}
+        # print "common name is", common_name
+        
         
     return render_template("cart.html")
 
