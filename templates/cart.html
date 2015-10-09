@@ -15,7 +15,6 @@
         <tbody>
             {% for id in session["cart"] %}      
         <tr>
-            <td>id</td>
             <td>{{ session["cart"][id]["common_name"] }}</td>
             <td>{{ session["cart"][id]["quantity"] }}</td>
             <td>{{ session["cart"][id]["price"] }}</td>
