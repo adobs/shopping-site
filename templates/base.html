@@ -3,6 +3,7 @@
     <link rel="stylesheet"
           href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.css"/>
     <link rel="stylesheet" href="/static/css/site.css"/>
+    <title>{% block title %}{% endblock %}</title>
 </head>
 
 <body>
@@ -24,7 +25,18 @@
                         My Melon Cart
                     </a>
                 </li>
-                <li><a href="">Log In</a></li>
+
+             {% if "login" not in session %}
+             <li><a href="/login">Log In</a></li>
+             <li><a href="/new_account">Sign Up</a></li>
+             {% else %}
+             <li><a href=""> Welcome</li>
+             <li><a href="/logout">Log Out</a></li>
+             {% endif %}
+             
+               
+    
+
             </ul>
         </div>
 

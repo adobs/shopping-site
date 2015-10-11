@@ -7,9 +7,9 @@ Authors: Joel Burton, Christian Fernandez, Meggie Mahnken.
 """
 
 
-from flask import Flask, render_template, redirect, flash, session
+from flask import Flask, render_template, redirect, flash, session, request, g
 import jinja2
-
+import customers
 import melons
 
 
@@ -39,8 +39,7 @@ def list_melons():
     """Return page showing all the melons ubermelon has to offer"""
 
     melon_list = melons.get_all()
-    return render_template("all_melons.html",
-                           melon_list=melon_list)
+    return render_template("all_melons.html", melon_list=melon_list)
 
 
 @app.route("/melon/<int:melon_id>")
@@ -51,7 +50,7 @@ def show_melon(melon_id):
     """
 
     melon = melons.get_by_id(melon_id)
-    print melon
+
     return render_template("melon_details.html",
                            display_melon=melon)
 
@@ -77,18 +76,26 @@ def shopping_cart():
     #                {id {quantity: 1}}
                     # {id {quantity: 1}}
         
-    print "session[cart] is", session["cart"]
-    
+    # print "session[cart] is", session["cart"]
+    # sum = 0
+    if 'cart' not in session:
+        session["cart"] = {} 
+
+    total_cart =0 
+
     for id in session["cart"]:
+        # import pdb; pdb.set_trace()
         common_name = melons.get_by_id(int(id)).common_name
         price_int = melons.get_by_id(int(id)).price
         price = "${:.2f}".format(melons.get_by_id(int(id)).price)
-        quantity = session["cart"][id]["quantity"]
+        quantity = session["cart"][str(id)]["quantity"]
         total = "${:.2f}".format(price_int * quantity)
-        # print "common name is", common_name
-        session["cart"][id] = {"common_name": common_name, "price": price, "quantity": quantity, "total": total}
-        
-    return render_template("cart.html")
+        session["cart"][str(id)] = {"common_name": common_name, "price": price, "quantity": quantity, "total": total}
+    
+        total_cart += price_int * quantity       
+    
+    return render_template("cart.html", total_cart=total_cart)
+    # return redirect("/")
 
 
 @app.route("/add_to_cart/<int:id>")
@@ -104,16 +111,22 @@ def add_to_cart(id):
     # session = cart{
     #                {id {quantity: 1}}
                     # {id {quantity: 1}}
-    #                                }
-    session["cart"] = {} 
-    if id not in session["cart"]:
-        session["cart"][id] = {"quantity": 1}
+    #                       }
+    
+    if 'cart' not in session:
+        session["cart"] = {} 
+   
+    if str(id) not in session["cart"]:
+        session["cart"][str(id)] = {"quantity": 1}
     else:
-        session["cart"][id]["quantity"] += 1
-    # print "session id is ", session[id]
+        session["cart"][str(id)]["quantity"] += 1
+        print "current quantity: ", session["cart"][str(id)]
 
     flash("Successfully added to cart")
 
+    # import pdb; pdb.set_trace()
+
+    print "CART", session["cart"]
     
     return redirect("/cart")
 
@@ -123,7 +136,15 @@ def add_to_cart(id):
     #
     # - add the id of the melon they bought to the cart in the session
 
-   
+
+@app.route("/logout")
+def logout():
+    """Logout and clear sessions."""
+
+    session.clear()
+
+
+    return redirect("/")
 
 
 @app.route("/login", methods=["GET"])
@@ -133,6 +154,31 @@ def show_login():
     return render_template("login.html")
 
 
+@app.route("/new_account")
+def create_account():
+    """Create new account."""
+
+    return render_template("new_account.html")
+
+
+@app.route("/success", methods=["POST", "GET"])
+def successful():
+    """flashes successful account."""
+
+    flash("Account successfully created")
+    g.new_customer_dictionary = {}
+    first_name = request.form["first-name"]
+    last_name = request.form["last-name"]
+    email = request.form["email"]
+    password = request.form["password"]
+    
+    with open("customers.txt", "a") as myfile:
+        myfile.write("\n{}|{}|{}|{}".format(first_name, last_name, email, password))
+        # myfile.close()
+
+    return redirect("/login")
+
+    
 @app.route("/login", methods=["POST"])
 def process_login():
     """Log user into site.
@@ -140,11 +186,21 @@ def process_login():
     Find the user's login credentials located in the 'request.form'
     dictionary, look up the user, and store them in the session.
     """
+    email = request.form["email"]
+    password = request.form["password"]
+    customer_dictionary = customers.get_all_customers()
 
-    # TODO: Need to implement this!
-
-    return "Oops! This needs to be implemented"
-
+    # checks to see if the email mataches the password stored for our three customers
+    if email in customer_dictionary and password == customer_dictionary[email].password:
+        session["login"] = email
+        return redirect("/")
+    # elif email in g.new_customer_dictionary:
+    #     session["login"] = email
+    #     return redirect("/")
+    else:
+        flash("You are not a valid user")
+        return redirect("/login")
+ 
 
 @app.route("/checkout")
 def checkout():

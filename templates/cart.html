@@ -13,19 +13,23 @@
         </tr>
         </thead>
         <tbody>
+          
             {% for id in session["cart"] %}      
         <tr>
             <td>{{ session["cart"][id]["common_name"] }}</td>
             <td>{{ session["cart"][id]["quantity"] }}</td>
             <td>{{ session["cart"][id]["price"] }}</td>
             <td>{{ session["cart"][id]["total"] }}</td>
+      
         </tr>
+         
             {% endfor %}
       
         </tbody>
     </table>
 
-    <h3>Total: $27.00</h3>
+    <h3>Total: ${{ "%.2f"|format(total_cart) }}</h3>
+
 
     <a href="/checkout" class="btn btn-large btn-primary">Check Out</a>
 
