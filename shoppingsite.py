@@ -5,7 +5,10 @@ put melons in a shopping cart.
 
 Authors: Joel Burton, Christian Fernandez, Meggie Mahnken.
 """
-
+# Questions!
+# Why is it that when I'm logged in, my nav bar isn't all on one line?
+# how could the login section where one is get and one is post be written so that there was just one "/login" route?
+# how do i make my navbar say Welcome (first_name)?
 
 from flask import Flask, render_template, redirect, flash, session, request, g
 import jinja2
@@ -161,12 +164,12 @@ def create_account():
     return render_template("new_account.html")
 
 
-@app.route("/success", methods=["POST", "GET"])
+@app.route("/new_account", methods=["POST"])
 def successful():
+    #do i need this page?  can i do it like how login did and not have a landing page?
     """flashes successful account."""
 
     flash("Account successfully created")
-    g.new_customer_dictionary = {}
     first_name = request.form["first-name"]
     last_name = request.form["last-name"]
     email = request.form["email"]
@@ -174,7 +177,7 @@ def successful():
     
     with open("customers.txt", "a") as myfile:
         myfile.write("\n{}|{}|{}|{}".format(first_name, last_name, email, password))
-        # myfile.close()
+        myfile.close()
 
     return redirect("/login")
 
@@ -188,15 +191,13 @@ def process_login():
     """
     email = request.form["email"]
     password = request.form["password"]
-    customer_dictionary = customers.get_all_customers()
+    customer_dictionary = customers.read_customers_from_file("customers.txt")
 
-    # checks to see if the email mataches the password stored for our three customers
+    # checks to see if the email mataches the password stored
     if email in customer_dictionary and password == customer_dictionary[email].password:
         session["login"] = email
         return redirect("/")
-    # elif email in g.new_customer_dictionary:
-    #     session["login"] = email
-    #     return redirect("/")
+    
     else:
         flash("You are not a valid user")
         return redirect("/login")
