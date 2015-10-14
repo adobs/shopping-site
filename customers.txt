@@ -4,3 +4,5 @@ Janet|Jefferson|janet@hotmail.com|seekrit
 Alexandra|Dobkin|dobs@u.northwestern.edu|password
 A|D|alexandradobkin@hotmail.com|password
 first|last|email@email.com|password
+A|Dob|alexandradobkin@hotmail.com|password
+A|Dob|alexandradobkin@hotmail.com|password

@@ -6,9 +6,11 @@ put melons in a shopping cart.
 Authors: Joel Burton, Christian Fernandez, Meggie Mahnken.
 """
 # Questions!
-# Why is it that when I'm logged in, my nav bar isn't all on one line?
 # how could the login section where one is get and one is post be written so that there was just one "/login" route?
-# how do i make my navbar say Welcome (first_name)?
+# how do i make my navbar say Welcome (first_name)? - tried using g, but that didn't work in jinja
+# to-do
+# make it so that my shopping cart isn't actually stored in my session
+
 
 from flask import Flask, render_template, redirect, flash, session, request, g
 import jinja2
@@ -133,11 +135,6 @@ def add_to_cart(id):
     
     return redirect("/cart")
 
-    # TODO: Finish shopping cart functionality
-
-    # The logic here should be something like:
-    #
-    # - add the id of the melon they bought to the cart in the session
 
 
 @app.route("/logout")
@@ -150,12 +147,6 @@ def logout():
     return redirect("/")
 
 
-@app.route("/login", methods=["GET"])
-def show_login():
-    """Show login form."""
-
-    return render_template("login.html")
-
 
 @app.route("/new_account")
 def create_account():
@@ -166,8 +157,7 @@ def create_account():
 
 @app.route("/new_account", methods=["POST"])
 def successful():
-    #do i need this page?  can i do it like how login did and not have a landing page?
-    """flashes successful account."""
+    """flashes successful account and writes the new account to the txt file"""
 
     flash("Account successfully created")
     first_name = request.form["first-name"]
@@ -180,6 +170,13 @@ def successful():
         myfile.close()
 
     return redirect("/login")
+
+
+@app.route("/login", methods=["GET"])
+def show_login():
+    """Show login form."""
+
+    return render_template("login.html")
 
     
 @app.route("/login", methods=["POST"])
