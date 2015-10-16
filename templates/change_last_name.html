@@ -1,0 +1,37 @@
+
+{% extends 'base.html' %}
+
+{% block body %}
+
+<h3>General Account Settings</h3><br>
+
+<form class="form-signin" method="POST">
+
+  <h2 class="form-signin-heading">Change your last name</h2>
+
+    <div class="form-group">
+    <label for="last-name-field" class="sr-only">Last Name</label>
+    <input type="text"
+           name="desired-last-name"
+           class="form-control input-lg"
+           placeholder="Enter desired last name"
+           required
+           autofocus>
+  </div>
+
+  <div class="form-group">
+    <label for="password-field" class="sr-only">Password</label>
+    <input type="password"
+           name="password"
+           class="form-control input-lg"
+           placeholder="Password"
+           required>
+  </div>
+
+
+  <button class="btn btn-lg btn-primary btn-block" type="submit">Change Last Name
+  </button>
+
+</form>
+
+{% endblock %}

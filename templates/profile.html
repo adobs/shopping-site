@@ -1,0 +1,29 @@
+
+{% extends 'base.html' %}
+
+{% block body %}
+
+<h3>General Account Settings</h3><br>
+
+<table class="table table-striped">
+    <tr>
+        <td>First Name</td>
+        <td>{{ first_name }}</td>
+        <td><a href="/change_first_name">Change</a></td>
+    </tr>
+    <tr>
+        <td>Last Name</td>
+        <td>{{ last_name }}</td>
+        <td><a href="/change_last_name">Change</a></td>
+    </tr>
+    <tr>
+        <td>Email</td>
+        <td>{{ email }}</td>
+        <td></td>
+    </tr>
+    </tr>
+        <td>Password</td>
+        <td>********</td>
+        <td><a href="/change_password">Change</a></td>
+
+{% endblock %}

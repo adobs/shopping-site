@@ -5,17 +5,18 @@ put melons in a shopping cart.
 
 Authors: Joel Burton, Christian Fernandez, Meggie Mahnken.
 """
+# PROBLEMS:
+
 # Questions!
-# how could the login section where one is get and one is post be written so that there was just one "/login" route?
-# how do i make my navbar say Welcome (first_name)? - tried using g, but that didn't work in jinja
-# to-do
-# make it so that my shopping cart isn't actually stored in my session
+# What's the best way to make global variables?  Need first name for nav bar, never render_template("base.html"), so need it to "pass through" without ever being called.  Is there a better way than using @app.context_processor functions?
+# What would have been a more concise way to make the pages where I change first name / last name / email / password?  Could I have pased the pages through as parameters in my @app?  like @app.route/change/<str:xyz>?
 
-
-from flask import Flask, render_template, redirect, flash, session, request, g
+from flask import Flask, render_template, redirect, flash, session, request
 import jinja2
 import customers
 import melons
+import sys
+import fileinput
 
 
 app = Flask(__name__)
@@ -82,24 +83,26 @@ def shopping_cart():
                     # {id {quantity: 1}}
         
     # print "session[cart] is", session["cart"]
-    # sum = 0
+    # # sum = 0
     if 'cart' not in session:
         session["cart"] = {} 
 
-    total_cart =0 
+    shopping_cart = {}
 
+    total_cart =0 
+ 
     for id in session["cart"]:
         # import pdb; pdb.set_trace()
         common_name = melons.get_by_id(int(id)).common_name
         price_int = melons.get_by_id(int(id)).price
         price = "${:.2f}".format(melons.get_by_id(int(id)).price)
-        quantity = session["cart"][str(id)]["quantity"]
+        quantity = session["cart"][id]
         total = "${:.2f}".format(price_int * quantity)
-        session["cart"][str(id)] = {"common_name": common_name, "price": price, "quantity": quantity, "total": total}
-    
+        shopping_cart[id] = {"common_name": common_name, "price": price, "quantity": quantity, "total": total}
+
         total_cart += price_int * quantity       
     
-    return render_template("cart.html", total_cart=total_cart)
+    return render_template("cart.html", shopping_cart=shopping_cart, total_cart=total_cart)
     # return redirect("/")
 
 
@@ -110,29 +113,12 @@ def add_to_cart(id):
     When a melon is added to the cart, redirect browser to the shopping cart
     page and display a confirmation message: 'Successfully added to cart'.
     """
-    ######### TOASK: WHY DO WE HAVE TO CONVERT TO INTS?
-
-    # TODO: turn the session to have a key of cart, value is a dictionary
-    # session = cart{
-    #                {id {quantity: 1}}
-                    # {id {quantity: 1}}
-    #                       }
     
-    if 'cart' not in session:
-        session["cart"] = {} 
-   
-    if str(id) not in session["cart"]:
-        session["cart"][str(id)] = {"quantity": 1}
-    else:
-        session["cart"][str(id)]["quantity"] += 1
-        print "current quantity: ", session["cart"][str(id)]
+    session["cart"][str(id)] = session["cart"].get(str(id),0)
+    session["cart"][str(id)] += 1
 
     flash("Successfully added to cart")
 
-    # import pdb; pdb.set_trace()
-
-    print "CART", session["cart"]
-    
     return redirect("/cart")
 
 
@@ -193,12 +179,120 @@ def process_login():
     # checks to see if the email mataches the password stored
     if email in customer_dictionary and password == customer_dictionary[email].password:
         session["login"] = email
-        return redirect("/")
+        return redirect("/melons")
     
     else:
         flash("You are not a valid user")
         return redirect("/login")
- 
+
+@app.route("/profile") 
+def profile_page():
+    """Displays profile page of user.  Provides links to change fields."""
+
+
+    if "login" in session:
+        first_name = customers.get_by_email(session["login"]).first_name
+        last_name = customers.get_by_email(session["login"]).last_name
+        email = customers.get_by_email(session["login"]).email
+        password = customers.get_by_email(session["login"]).password
+
+    return render_template("profile.html", first_name=first_name, last_name=last_name, email=email, password=password)
+
+
+@app.route("/change_first_name", methods=["GET"]) 
+def edit_first_name_form():
+    
+    return render_template("change_first_name.html")
+
+
+@app.route("/change_first_name", methods=["POST"]) 
+def edit_first_name():
+
+    first_name = customers.get_by_email(session["login"]).first_name
+    last_name = customers.get_by_email(session["login"]).last_name
+    email = customers.get_by_email(session["login"]).email
+    password = customers.get_by_email(session["login"]).password
+
+    desired_first_name = request.form.get("desired-first-name")
+    submitted_password = request.form.get("password")
+
+    if password == submitted_password:    
+        for i, line in enumerate(fileinput.input('customers.txt', inplace=1)):
+            sys.stdout.write(line.replace(first_name+"|"+last_name+"|"+email+"|"+password, desired_first_name+"|"+last_name+"|"+email+"|"+password))
+        
+        flash("Your first name has been updated")
+
+    else:
+        flash("Incorrect password")
+    
+    return redirect("/profile")
+
+@app.route("/change_last_name", methods=["GET"]) 
+def edit_last_name_form():
+    
+    return render_template("change_last_name.html")
+
+
+@app.route("/change_last_name", methods=["POST"]) 
+def edit_last_name():
+
+    first_name = customers.get_by_email(session["login"]).first_name
+    last_name = customers.get_by_email(session["login"]).last_name
+    email = customers.get_by_email(session["login"]).email
+    password = customers.get_by_email(session["login"]).password
+
+    desired_last_name = request.form.get("desired-last-name")
+    submitted_password = request.form.get("password")
+
+    if password == submitted_password:    
+        for i, line in enumerate(fileinput.input('customers.txt', inplace=1)):
+            sys.stdout.write(line.replace(first_name+"|"+last_name+"|"+email+"|"+password, first_name+"|"+desired_last_name+"|"+email+"|"+password))
+        
+        flash("Your last name has been updated")
+
+    else:
+        flash("Incorrect password")
+    
+    return redirect("/profile")
+
+
+@app.route("/change_password", methods=["GET"]) 
+def edit_password_form():
+    
+    return render_template("change_password.html")
+
+
+@app.route("/change_password", methods=["POST"]) 
+def edit_password_name():
+
+    first_name = customers.get_by_email(session["login"]).first_name
+    last_name = customers.get_by_email(session["login"]).last_name
+    email = customers.get_by_email(session["login"]).email
+    password = customers.get_by_email(session["login"]).password
+
+    confirm_password = request.form.get("confirm-password")
+    desired_password = request.form.get("desired-password")
+    
+    if password == confirm_password:
+        for i, line in enumerate(fileinput.input('customers.txt', inplace=1)):
+            sys.stdout.write(line.replace(first_name+"|"+last_name+"|"+email+"|"+password, first_name+"|"+last_name+"|"+email+"|"+desired_password))
+        
+        flash("Your password has been updated")
+
+    else:
+        flash("Incorrect password")
+    
+    return redirect("/profile")
+
+
+@app.context_processor
+def first_name_creation():
+    if "login" in session:
+        first_name = customers.get_by_email(session["login"]).first_name
+        return dict(first_name=first_name)
+    else:
+        return dict(first="hello")
+
 
 @app.route("/checkout")
 def checkout():

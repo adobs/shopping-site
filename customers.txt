@@ -1,8 +1,8 @@
-Jane|Melonista|jane@jane.com|secret
-Jayden|Auden|jayden@gmail.com|nevertell
+Jenny|Melon|jane@jane.com|password
+Jayden|elephuden|jayden@gmail.com|nevertell
 Janet|Jefferson|janet@hotmail.com|seekrit
-Alexandra|Dobkin|dobs@u.northwestern.edu|password
-A|D|alexandradobkin@hotmail.com|password
+elephlexandra|Dobkin|dobs@u.northwestern.edu|password
+eleph|D|alexandradobkin@hotmail.com|password
 first|last|email@email.com|password
-A|Dob|alexandradobkin@hotmail.com|password
-A|Dob|alexandradobkin@hotmail.com|password
+Apple|Bob|alexandradobkin@hotmail.com|password
+Apple|Bob|alexandradobkin@hotmail.com|password
