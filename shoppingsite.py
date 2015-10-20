@@ -113,8 +113,11 @@ def add_to_cart(id):
     When a melon is added to the cart, redirect browser to the shopping cart
     page and display a confirmation message: 'Successfully added to cart'.
     """
+
+    if 'cart' not in session:
+        session["cart"] = {} 
     
-    session["cart"][str(id)] = session["cart"].get(str(id),0)
+    session["cart"][str(id)] = session["cart"].get(str(id), 0)
     session["cart"][str(id)] += 1
 
     flash("Successfully added to cart")

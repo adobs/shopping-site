@@ -33,7 +33,7 @@ def read_customers_from_file(filename):
 
 def get_by_email(email):
     """Takes an email, returns the customer object corresponding to it"""
-    customers = read_customers_from_file("customers.text")
+    customers = read_customers_from_file("customers.txt")
     return customers[email]
 
 

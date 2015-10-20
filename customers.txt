@@ -6,3 +6,5 @@ eleph|D|alexandradobkin@hotmail.com|password
 first|last|email@email.com|password
 Apple|Bob|alexandradobkin@hotmail.com|password
 Apple|Bob|alexandradobkin@hotmail.com|password
+A|bet|abet@gmail.com|awef
+Uma|Peterson|uma@gmail.com|password
